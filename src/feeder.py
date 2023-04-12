@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 31 21:11:25 2023
-
-@author: nicola
-"""
 
 import feedparser
 import sqlite3
 import telegram
+from telegram import ParseMode
 from datetime import datetime
 
-
 # path to this repo
-path = "/home/nicola/Projects/DailyScienceFeed/"
+path = "C:/Users/nicol/OneDrive/Documenti/Projects/DailyScienceFeed/"
 # database offerte già inviate
 database = path + "data/feed.db"
 # token e id bot telegram
@@ -21,7 +16,7 @@ bot_data = path + "data/bot.txt"
 
 bot_info = open(bot_data,"r")
 bot_token = bot_info.readline().strip('\n')
-ID = bot_info.readline().strip('\n')
+bot_id = bot_info.readline().strip('\n')
 
 # Creazione del client Telegram
 bot = telegram.Bot(token=bot_token)
@@ -62,6 +57,8 @@ for u in urls:
             db.close()
             
             # invia messaggio
-            message = topic + "\n\n" + title + "\n\n" + description + "\n\n" + link
-            bot.send_message(chat_id=ID, text=message, disable_web_page_preview=True)
+            link_title = "<a " + "href='" + link + "'>" + title + "</a>"
+            message = topic + "\n\n" + link_title + "\n\n" + description
+
+            bot.send_message(chat_id=bot_id, text=message, disable_web_page_preview=True, parse_mode = ParseMode.HTML)
 
