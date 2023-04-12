@@ -48,17 +48,25 @@ for u in urls:
             date = date.split(' ')[0] + ' ' + date.split(' ')[1] + ' ' + date.split(' ')[2] + ' ' + date.split(' ')[3]
             date = datetime.strptime(date, '%a, %d %b %Y')
             date = date.strftime('%d-%m-%Y')
+            
+        # seleziona la tabella delle news già inviate
+        db = sqlite3.connect(database)
+        c = db.cursor()
+        c.execute('SELECT Title FROM old')
+        old = c.fetchall()
+        old = [result[0] for result in old]
+        
+        # se la notizia non è già stata inviata:
         if title not in old:
+            # salva nel db
             db = sqlite3.connect(database)
             c = db.cursor()
             c.execute('INSERT INTO old (Topic, Title, Link, PubDate) VALUES (?, ?, ?, ?)',
                       (topic, title, link, date))
             db.commit()
             db.close()
-            
             # invia messaggio
             link_title = "<a " + "href='" + link + "'>" + title + "</a>"
             message = topic + "\n\n" + link_title + "\n\n" + description
-
             bot.send_message(chat_id=bot_id, text=message, disable_web_page_preview=True, parse_mode = ParseMode.HTML)
 
